@@ -16,7 +16,7 @@ build:
 	make build.local
 
 build.postgres:
-	docker buildx build --no-cache --platform linux/amd64,linux/arm64,windows/amd64 -f deploy/postgres/Dockerfile -t fruits/store .
+	docker build -f deploy/postgres/Dockerfile -t fruits/store .
 
 push.postgres:
 	docker tag fruits/store registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/store:latest
@@ -26,7 +26,7 @@ run.postgres:
 	docker run --name store -e POSTGRES_USER=user -e POSTGRES_PASSWORD=random -e POSTGRES_DB=homework -p 5432:5432 registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/store
 
 up:
-	docker-compose up -d --wait
+	docker-compose up -d
 
 status:
 	docker-compose ps
