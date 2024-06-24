@@ -3,8 +3,8 @@ from fastapi.responses import HTMLResponse
 from tortoise import functions
 from tortoise.expressions import Q
 
-import models
-from serializers import (
+from enterprise import models
+from enterprise.serializers import (
     CompanySerializer,
     ItemSerializer,
     JobSerializer,

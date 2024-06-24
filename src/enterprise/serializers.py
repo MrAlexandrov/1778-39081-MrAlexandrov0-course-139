@@ -1,6 +1,6 @@
 from tortoise.contrib.pydantic import pydantic_model_creator
 
-import models
+from enterprise import models
 
 UserSerializer = pydantic_model_creator(models.User)
 CompanySerializer = pydantic_model_creator(models.Company)
