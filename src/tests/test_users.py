@@ -7,11 +7,10 @@ import pytest
 def timeit(duration):
     def wrapper(method):
         @wraps(method)
-        def timed(*args, **kwargs):
+        async def timed(*args, **kwargs):
             # прогрев
-            result = method(*args, **kwargs)
             ts = time.time()
-            result = method(*args, **kwargs)
+            result = await method(*args, **kwargs)
             te = time.time()
             execute_time = int((te - ts) * 1000)
             assert execute_time < duration
@@ -23,7 +22,12 @@ def timeit(duration):
     return wrapper
 
 
-def test():
+# def test():
+#     """Показывает время выполнения без SQL запросов"""
+#     assert True is True
+
+@timeit(duration=20)
+async def test_async():
     """Показывает время выполнения без SQL запросов"""
     assert True is True
 

@@ -1,5 +1,5 @@
 build.base:
-	docker build -f deploy/base/Dockerfile -t fruits/service-base .
+	docker build --no-cache -f deploy/base/Dockerfile -t fruits/service-base .
 
 push.base:
 	docker tag fruits/service-base registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/service-base:latest
@@ -54,3 +54,6 @@ logs:
 
 test:
 	docker-compose exec service pytest --durations=0
+
+bash:
+	docker-compose exec service bash
