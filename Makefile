@@ -1,15 +1,15 @@
 build.base:
-	docker build --no-cache -f deploy/base/Dockerfile -t fruits/service-base .
+	docker build --platform="linux/amd64" --no-cache -f deploy/base/Dockerfile -t fruits/service-base .
 
 push.base:
 	docker tag fruits/service-base registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/service-base:latest
 	docker push registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/service-base:latest
 
 build.local:
-	docker build -f deploy/local/Dockerfile -t fruits/service-local .
+	docker build  --platform="linux/amd64" -f deploy/local/Dockerfile -t fruits/service-local .
 
 build.ci:
-	docker build -f deploy/ci/Dockerfile -t fruits/service-ci .
+	docker build  --platform="linux/amd64" -f deploy/ci/Dockerfile -t fruits/service-ci .
 
 build:
 	make build.base
