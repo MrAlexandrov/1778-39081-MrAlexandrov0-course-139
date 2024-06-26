@@ -14,7 +14,7 @@ services:
       PGDATABASE: "homework"
     volumes:
       - ./src:/app
-      - ./solution:/app/solution
+      - ./tasks:/tasks
     depends_on:
       - store
     healthcheck:

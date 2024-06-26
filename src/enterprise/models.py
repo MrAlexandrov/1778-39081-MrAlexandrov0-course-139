@@ -1,4 +1,3 @@
-from enum import Enum
 
 from tortoise import fields, models
 
@@ -52,66 +51,116 @@ class User(models.Model):
         return f"<{self.id}: {self.last_name} {self.first_name} {self.second_name}>"
 
 
-# class Seller(models.Model):
-#     class Meta:
-#         table = "users_company"
-
-#     id = fields.IntField(pk=True)
-#     title = fields.CharField(max_length=200)
-
-#     def __str__(self) -> str:
-#         return f"<{self.id}: {self.title}>"
+class TimestampMixin():
+    created_at = fields.DatetimeField(null=True, auto_now_add=True)
+    updated_at = fields.DatetimeField(null=True, auto_now=True)
 
 
-# class SellersItem(models.Model):
-#     id = fields.UUIDField(pk=True)
-#     price = fields.DecimalField(max_digits=10, decimal_places=2)
-#     currency = fields.CharField(max_length=10)
-#     count = fields.IntField()
-#     seller = fields.ForeignKeyField(
-#         "models.Seller",
-#         on_delete=fields.RESTRICT,
-#         related_name="sellers_items",
-#     )
-#     item = fields.ForeignKeyField(
-#         "models.Item",
-#         on_delete=fields.RESTRICT,
-#         related_name="sellers_items",
-#     )
+class Customer(TimestampMixin, models.Model):
+    class Meta:
+        table = "customers"
+
+    customer_id = fields.IntField(pk=True, allows_generated=True)
+    first_name = fields.CharField(max_length=50, null=False)
+    last_name = fields.CharField(max_length=50, null=False)
+    email = fields.CharField(max_length=100, null=False, unique=True)
+    phone = fields.CharField(max_length=20)
+    address = fields.CharField(max_length=255)
+    city = fields.CharField(max_length=100)
+    state = fields.CharField(max_length=100)
+    zip_code = fields.CharField(max_length=20)
+
+    def __str__(self) -> str:
+        return f"<{self.customer_id}: {self.last_name} {self.first_name}>"
+
+class Order(TimestampMixin, models.Model):
+    class Meta:
+        table = "orders"
+
+    order_id = fields.IntField(pk=True, allows_generated=True)
+    customer = fields.ForeignKeyField(
+        "models.Customer",
+        on_delete=fields.RESTRICT,
+    )
+    order_date = fields.DateField(null=True)
+    total_amount = fields.DecimalField(max_digits=10, decimal_places=2)
+    status = fields.CharField(max_length=50)
+    shipping_address = fields.CharField(max_length=255)
+    billing_address = fields.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return f"<{self.order_id}: Customer <{self.customer_id}>>"
 
 
-# class OrderStatus(str, Enum):
-#     NEW = "NEW"
-#     CANCELLED = "CANCELLED"
+class OrderProduct(models.Model):
+    class Meta:
+        table = 'orders_products'
+
+    order_product_id = fields.IntField(pk=True, allows_generated=True)
+    order = fields.ForeignKeyField(
+        "models.Order",
+        on_delete=fields.RESTRICT,
+    )
+    product = fields.ForeignKeyField(
+        "models.Product",
+        on_delete=fields.RESTRICT,
+    )
+    quantity = fields.IntField(null=False)
 
 
-# class Order(models.Model):
-#     id = fields.UUIDField(pk=True)
-#     status = fields.CharEnumField(OrderStatus, default=OrderStatus.NEW)
-#     seller = fields.ForeignKeyField(
-#         "models.Seller",
-#         on_delete=fields.RESTRICT,
-#         related_name="orders",
-#     )
-#     item = fields.ForeignKeyField(
-#         "models.Item",
-#         on_delete=fields.RESTRICT,
-#         related_name="orders",
-#     )
+class Product(models.Model):
+    class Meta:
+        table = 'products'
+
+    product_id = fields.IntField(pk=True, allows_generated=True)
+    name = fields.CharField(100, null=False)
+    description = fields.TextField()
+    image_url = fields.CharField(255)
 
 
-# class Payment(models.Model):
-#     id = fields.UUIDField(pk=True)
-#     order = fields.ForeignKeyField(
-#         "models.Order",
-#         on_delete=fields.RESTRICT,
-#         related_name="payments",
-#     )
+class Seller(TimestampMixin, models.Model):
+    class Meta:
+        table =  'sellers'
+
+    seller_id = fields.IntField(pk=True, allows_generated=True)
+    name = fields.CharField(100, null=False)
+    email = fields.CharField(100, null=False, unique=True)
+    phone = fields.CharField(20)
+    address = fields.CharField(255)
+    city = fields.CharField(100)
+    state = fields.CharField(100)
+    zip_code = fields.CharField(20)
+    latitude = fields.DecimalField(max_digits=9, decimal_places=6)
+    longitude = fields.DecimalField(max_digits=9, decimal_places=6)
 
 
-# class Item(models.Model):
-#     id = fields.UUIDField(pk=True)
-#     description = fields.TextField()
+class SellerPrice(TimestampMixin, models.Model):
+    class Meta:
+        table = 'seller_prices'
 
-#     def __str__(self) -> str:
-#         return f"<{self.id}: {self.description}>"
+    seller_price_id = fields.IntField(pk=True, allows_generated=True)
+    seller = fields.ForeignKeyField(
+        "models.Seller",
+        on_delete=fields.RESTRICT,
+    )
+    product = fields.ForeignKeyField(
+        "models.Product",
+        on_delete=fields.RESTRICT,
+    )
+    price = fields.DecimalField(max_digits=10, decimal_places=2)
+
+
+class SellerStock(TimestampMixin, models.Model):
+    class Meta:
+        table = 'seller_stock'
+
+    seller_stock_id = fields.IntField(pk=True, allows_generated=True)
+    seller = fields.ForeignKeyField(
+        "models.Seller",
+        on_delete=fields.RESTRICT,
+    )
+    product = fields.ForeignKeyField(
+        "models.Product",
+        on_delete=fields.RESTRICT,
+    )
+    stock = fields.IntField()
