@@ -13,4 +13,4 @@ score:
     reports:
       junit: src/report.xml
     paths:
-      - score.json
+      - src/score.json
