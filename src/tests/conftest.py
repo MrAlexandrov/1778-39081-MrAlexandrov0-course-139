@@ -68,7 +68,7 @@ def pytest_runtest_logreport(report):
 @pytest.fixture(scope="session", autouse=True)
 def send_report(request):
     def _send_report():
-        with open("../score.json", "w") as f:
+        with open("score.json", "w") as f:
             json.dump({"score": len(successful_tests)}, f)
 
     request.addfinalizer(_send_report)
