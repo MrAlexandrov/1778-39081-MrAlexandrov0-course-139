@@ -31,18 +31,9 @@ def initialize_db():
     run_async(Tortoise.close_connections())
 
 
-
 @pytest.fixture
-async def user():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
-
-
-@pytest.fixture
-async def client():
-    breakpoint()
-    with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
+def client():
+    yield AsyncClient(app=app, base_url="http://test")
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -67,9 +58,7 @@ def read_indexes(initialize_db):
         await conn.execute_query("SELECT pg_stat_reset();")
 
     run_async(run_scripts())
-
-
-
+    
 
 def pytest_runtest_logreport(report):
     if report.when == "call" and report.passed:

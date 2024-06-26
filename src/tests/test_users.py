@@ -1,7 +1,5 @@
 import time
 from functools import wraps
-from httpx import AsyncClient
-from enterprise.app import app
 
 import pytest
 
@@ -44,9 +42,8 @@ def timeit(duration):
 async def test_async():
     assert True is True
 
-async def test_hello():
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        response = await client.get("/")
+async def test_hello(client):
+    response = await client.get("/")
     assert response.status_code == 200
 
 
@@ -55,9 +52,8 @@ async def test_hello():
     ("Josh", "Иван", "Dunin", "NotFoundValue"),
 )
 @async_timeit(duration=20)
-async def test_v1(search):    
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        response = await client.get(f"/v1/users/?search={search}")
+async def test_v1(client, search):    
+    response = await client.get(f"/v1/users/?search={search}")
     assert response.status_code == 200, response.status_code
 
 
@@ -66,9 +62,8 @@ async def test_v1(search):
     ("Josh", "Ivan", "Dunin", "NotFoundValue"),
 )
 @async_timeit(duration=150)
-async def test_v2(search):
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        response = await client.get(f"/v2/users/?search={search}")
+async def test_v2(client, search):
+    response = await client.get(f"/v2/users/?search={search}")
     assert response.status_code == 200, response.status_code
 
 
@@ -77,7 +72,6 @@ async def test_v2(search):
     ("Иван", "Сергеевич", "Иванова"),
 )
 @async_timeit(duration=150)
-async def test_v2_ru(search):
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        response = await client.get(f"/v2/users/?search={search}")
+async def test_v2_ru(client, search):
+    response = await client.get(f"/v2/users/?search={search}")
     assert response.status_code == 200, response.status_code
