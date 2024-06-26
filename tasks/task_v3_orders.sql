@@ -1,0 +1,10 @@
+-- Необходимо на писать индекс для запроса
+--
+-- SELECT
+--     *
+-- FROM
+--     orders
+-- WHERE
+--     status = 'Pending'
+-- ORDER BY
+--     order_date;

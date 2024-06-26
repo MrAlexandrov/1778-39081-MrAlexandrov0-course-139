@@ -40,17 +40,16 @@ def client():
 def read_indexes(initialize_db):
     async def run_scripts():
         solutions = (
-            "./solution/task_v1.sql",
-            "./solution/task_v2.sql",
+            "/tasks/task_v1.sql",
+            "/tasks/task_v2.sql",
+            "/tasks/task_v3_orders.sql",
         )
-
         conn = Tortoise.get_connection("default")
         
         for file in solutions:
             try:
                 with open(file) as sql:
-                    raw_sql = sql.read()
-                    if raw_sql:
+                    if raw_sql := sql.read():
                         await conn.execute_script(raw_sql)
             except Exception as e:
                 print(e)

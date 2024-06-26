@@ -5,8 +5,7 @@ score:
     alias: store
   script:
   - cd src/
-  - ls -la /
-  - ls .
+  - sleep 3
   - pytest -v --durations=0 
   artifacts:
     when: always
