@@ -1,0 +1,14 @@
+score:
+  image: registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/service-base:latest
+  services:
+  - name: registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/store:latest
+    alias: store
+  script:
+  - cd app/
+  - pytest --durations=0 
+  artifacts:
+    when: always
+    reports:
+      junit: app/report.xml
+    paths:
+      - score.json

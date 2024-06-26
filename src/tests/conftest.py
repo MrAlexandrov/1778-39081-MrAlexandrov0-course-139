@@ -3,13 +3,11 @@ import os
 
 import pytest
 from httpx import AsyncClient
-from tortoise import Tortoise
-from tortoise.contrib.test import finalizer, initializer
-from tortoise import Tortoise
-from tortoise.contrib.fastapi import register_tortoise
+from tortoise import Tortoise, run_async
 
 from enterprise.app import app
-from config import TORTOISE_ORM  # Импортируйте конфигурацию Tortoise-ORM
+from config import TORTOISE_ORM
+
 
 DATABASE_NAME = os.getenv("DATABASE_NAME", "homework")
 DATABASE_USER = os.getenv("DATABASE_USER", "user")
@@ -22,46 +20,55 @@ DATABASE_URL = f"postgres://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:
 successful_tests = []
 
 
-# @pytest.fixture(scope="session", autouse=True)
-# def test_db():
-    # Инициализация базы данных перед тестами
-    # await Tortoise.init(config=TORTOISE_ORM)
-    # await Tortoise.generate_schemas()
+@pytest.fixture(scope="session", autouse=True)
+def initialize_db():
+    async def init():
+        await Tortoise.init(config=TORTOISE_ORM)
+        # Не создаем схемы, так как база данных уже создана
 
-    # yield
-    # # Закрытие базы данных после тестов
-    # await Tortoise.close_connections()
+    run_async(init())
+    yield
+    run_async(Tortoise.close_connections())
+
 
 
 @pytest.fixture
 async def user():
-    await Tortoise.init(config=TORTOISE_ORM)
-    await Tortoise.generate_schemas()
-
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
-    # Закрытие базы данных после тестов
-    await Tortoise.close_connections()
 
 
-# @pytest.fixture(scope="session", autouse=True)
-# async def read_indexes():
-#     solutions = (
-#         # проверяем 1е два решения
-#         "../solution/task_v1.sql",
-#         "../solution/task_v2.sql",
-#     )
+@pytest.fixture
+async def client():
+    breakpoint()
+    with AsyncClient(app=app, base_url="http://test") as ac:
+        yield ac
 
-#     conn = Tortoise.get_connection("default")
-#     for file in solutions:
-#         try:
-#             with open(file) as sql:
-#                 raw_sql = sql.read()
-#                 if raw_sql:
-#                     await conn.execute_script(raw_sql)
-#         except Exception as e:
-#             print(e)
-#     await conn.execute_query("SELECT pg_stat_reset();")
+
+@pytest.fixture(scope="session", autouse=True)
+def read_indexes(initialize_db):
+    async def run_scripts():
+        solutions = (
+            "./solution/task_v1.sql",
+            "./solution/task_v2.sql",
+        )
+
+        conn = Tortoise.get_connection("default")
+        
+        for file in solutions:
+            try:
+                with open(file) as sql:
+                    raw_sql = sql.read()
+                    if raw_sql:
+                        await conn.execute_script(raw_sql)
+            except Exception as e:
+                print(e)
+        
+        await conn.execute_query("SELECT pg_stat_reset();")
+
+    run_async(run_scripts())
+
+
 
 
 def pytest_runtest_logreport(report):

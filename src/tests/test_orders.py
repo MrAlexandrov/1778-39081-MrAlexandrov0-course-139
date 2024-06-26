@@ -1,4 +1,3 @@
-import pytest 
 
 import random
 from dataclasses import dataclass
@@ -14,7 +13,6 @@ class SellersItem:
     count: int
 
 
-@pytest.mark.asyncio
 async def test_create_and_delete_orders(user):
     sellers_items = []
 
