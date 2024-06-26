@@ -3,10 +3,11 @@ import os
 
 import pytest
 from httpx import AsyncClient
-from tortoise import Tortoise
-from tortoise.contrib.test import finalizer, initializer
+from tortoise import Tortoise, run_async
 
 from enterprise.app import app
+from config import TORTOISE_ORM
+
 
 DATABASE_NAME = os.getenv("DATABASE_NAME", "homework")
 DATABASE_USER = os.getenv("DATABASE_USER", "user")
@@ -20,39 +21,44 @@ successful_tests = []
 
 
 @pytest.fixture(scope="session", autouse=True)
-def test_db():
-    initializer(["enterprise.models"], db_url=DATABASE_URL)
+def initialize_db():
+    async def init():
+        await Tortoise.init(config=TORTOISE_ORM)
+        # Не создаем схемы, так как база данных уже создана
+
+    run_async(init())
     yield
-    finalizer()
+    run_async(Tortoise.close_connections())
 
 
 @pytest.fixture
-async def user(test_db):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
+def client():
+    yield AsyncClient(app=app, base_url="http://test")
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def read_indexes():
-    solutions = (
-        # проверяем 1е два решения
-        "../solution/task_v1.sql",
-        "../solution/task_v2.sql",
-        # вдруг есть один файл с решениями
-        "../solution/solution.sql",
-    )
+def read_indexes(initialize_db):
+    async def run_scripts():
+        solutions = (
+            "./solution/task_v1.sql",
+            "./solution/task_v2.sql",
+        )
 
-    conn = Tortoise.get_connection("default")
-    for file in solutions:
-        try:
-            with open(file) as sql:
-                raw_sql = sql.read()
-                if raw_sql:
-                    await conn.execute_script(raw_sql)
-        except Exception as e:
-            print(e)
-    await conn.execute_query("SELECT pg_stat_reset();")
+        conn = Tortoise.get_connection("default")
+        
+        for file in solutions:
+            try:
+                with open(file) as sql:
+                    raw_sql = sql.read()
+                    if raw_sql:
+                        await conn.execute_script(raw_sql)
+            except Exception as e:
+                print(e)
+        
+        await conn.execute_query("SELECT pg_stat_reset();")
 
+    run_async(run_scripts())
+    
 
 def pytest_runtest_logreport(report):
     if report.when == "call" and report.passed:
@@ -62,7 +68,7 @@ def pytest_runtest_logreport(report):
 @pytest.fixture(scope="session", autouse=True)
 def send_report(request):
     def _send_report():
-        with open("../score.json", "w") as f:
+        with open("score.json", "w") as f:
             json.dump({"score": len(successful_tests)}, f)
 
     request.addfinalizer(_send_report)

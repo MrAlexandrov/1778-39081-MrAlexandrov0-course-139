@@ -2,6 +2,10 @@ from fastapi import FastAPI, HTTPException, Path, Query
 from fastapi.responses import HTMLResponse
 from tortoise import functions
 from tortoise.expressions import Q
+from tortoise.contrib.fastapi import register_tortoise
+
+from config import TORTOISE_ORM
+
 
 from enterprise import models
 from enterprise.serializers import (
@@ -15,21 +19,26 @@ from enterprise.serializers import (
 
 app = FastAPI()
 
+register_tortoise(
+    app,
+    config=TORTOISE_ORM,
+    generate_schemas=False,
+    add_exception_handlers=True,
+)
 
 @app.get("/")
 async def home_view():
     return HTMLResponse("<h1>Hello Student!</h1>")
 
 
-@app.get("/v1/users", response_model=list[UserSerializer])
+@app.get("/v1/users/", response_model=list[UserSerializer])
 async def list_users_v1(search: str | None = Query(None)):
     query = models.User.all()
 
     if search:
         query = query.filter(
             (
-                Q(id=search)
-                | Q(first_name__istartswith=search)
+                Q(first_name__istartswith=search)
                 | Q(last_name__istartswith=search)
             )
         )
@@ -37,14 +46,13 @@ async def list_users_v1(search: str | None = Query(None)):
     return await UserSerializer.from_queryset(query)
 
 
-@app.get("/v2/users", response_model=list[UserSerializer])
+@app.get("/v2/users/", response_model=list[UserSerializer])
 async def list_users_v2(search: str | None = Query(None)):
     query = models.User.all().order_by("last_name")
 
     if search:
         query = query.filter(
-            Q(id=search)
-            | Q(first_name__icontains=search)
+            Q(first_name__icontains=search)
             | Q(last_name__icontains=search)
             | Q(phone_number__istartswith=search)
             | Q(email__icontains=search)
@@ -59,7 +67,7 @@ async def list_companies(search: str | None = Query(None)):
 
     if search:
         query = query.filter(
-            Q(id=search) | Q(title__istartswith=search) | Q(address__icontains=search)
+            Q(title__istartswith=search) | Q(address__icontains=search)
         )
 
     return await CompanySerializer.from_queryset(query)

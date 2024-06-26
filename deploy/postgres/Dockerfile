@@ -1,3 +1,3 @@
-FROM postgres:13
+FROM postgres:15
 
 ENV POSTGRES_USER="user" POSTGRES_PASSWORD="random" POSTGRES_DB="homework"

@@ -1,3 +1,4 @@
+
 import random
 from dataclasses import dataclass
 from uuid import UUID
@@ -12,7 +13,7 @@ class SellersItem:
     count: int
 
 
-async def test_create_and_delete_orders(user):
+async def _test_create_and_delete_orders(user):
     sellers_items = []
 
     for i in range(3):

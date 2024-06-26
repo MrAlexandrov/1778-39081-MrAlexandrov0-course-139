@@ -49,3 +49,5 @@ postgresql_data/
 
 report.xml
 .DS_Store
+
+score.json
