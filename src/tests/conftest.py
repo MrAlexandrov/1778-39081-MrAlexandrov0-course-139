@@ -64,6 +64,7 @@ def read_indexes(initialize_db):
 
 def pytest_runtest_logreport(report):
     if report.when == "call":
+        global tests_count
         tests_count += 1
         if report.passed:
             successful_tests.append(report.nodeid)
