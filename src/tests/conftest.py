@@ -18,6 +18,8 @@ DATABASE_PORT = os.getenv("DATABASE_PORT", "5432")
 DATABASE_URL = f"postgres://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 successful_tests = []
+failed_tests = []
+tests_count = 0
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -61,14 +63,18 @@ def read_indexes(initialize_db):
     
 
 def pytest_runtest_logreport(report):
-    if report.when == "call" and report.passed:
-        successful_tests.append(report.nodeid)
+    if report.when == "call":
+        tests_count += 1
+        if report.passed:
+            successful_tests.append(report.nodeid)
+        else:
+            failed_tests.append(report.nodeid)
 
 
 @pytest.fixture(scope="session", autouse=True)
 def send_report(request):
     def _send_report():
-        with open("score.json", "w") as f:
-            json.dump({"score": len(successful_tests)}, f)
+        with open("result.json", "w") as f:
+            json.dump({"tests_ok": len(successful_tests), "tests_count": tests_count, "failed": failed_tests}, f)
 
     request.addfinalizer(_send_report)
