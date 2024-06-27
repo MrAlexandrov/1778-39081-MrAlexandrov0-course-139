@@ -39,10 +39,11 @@ def client():
 @pytest.fixture(scope="session", autouse=True)
 def read_indexes(initialize_db):
     async def run_scripts():
+        path = os.path.abspath(__file__)
         solutions = (
-            "/tasks/task_v1.sql",
-            "/tasks/task_v2.sql",
-            "/tasks/task_v3_orders.sql",
+            f"{path}/../../tasks/task_v1.sql",
+            f"{path}/../../tasks/task_v2.sql",
+            f"{path}/../../tasks/task_v3_orders.sql",
         )
         conn = Tortoise.get_connection("default")
         
