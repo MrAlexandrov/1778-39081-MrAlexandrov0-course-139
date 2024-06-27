@@ -11,6 +11,10 @@ build.local:
 build.ci:
 	docker build  --platform="linux/amd64" -f deploy/ci/Dockerfile -t fruits/service-ci .
 
+push.ci:
+	docker tag fruits/service-ci registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/service-ci:latest
+	docker push registry.yandex-academy.ru/school/2024-06/backend/python/homeworks/hw3_dbindex/fruits/service-ci:latest
+
 build:
 	make build.base
 	make build.local
