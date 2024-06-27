@@ -76,7 +76,8 @@ def pytest_runtest_logreport(report):
 @pytest.fixture(scope="session", autouse=True)
 def send_report(request):
     def _send_report():
-        with open("result.json", "w") as f:
+        path = os.path.normpath(f'{os.path.dirname(os.path.abspath(__file__))}/../../..')
+        with open(f"{path}/result.json", "w") as f:
             json.dump({"tests_ok": len(successful_tests), "tests_count": tests_count, "failed": failed_tests}, f)
 
     request.addfinalizer(_send_report)
