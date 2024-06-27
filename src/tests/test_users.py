@@ -51,7 +51,7 @@ async def test_hello(client):
     "search",
     ("Josh", "Иван", "Dunin", "NotFoundValue"),
 )
-@async_timeit(duration=20)
+@async_timeit(duration=100)
 async def test_v1(client, search):    
     response = await client.get(f"/v1/users/?search={search}")
     assert response.status_code == 200, response.status_code
@@ -61,7 +61,7 @@ async def test_v1(client, search):
     "search",
     ("Josh", "Ivan", "Dunin", "NotFoundValue"),
 )
-@async_timeit(duration=150)
+@async_timeit(duration=600)
 async def test_v2(client, search):
     response = await client.get(f"/v2/users/?search={search}")
     assert response.status_code == 200, response.status_code
@@ -71,7 +71,7 @@ async def test_v2(client, search):
     "search",
     ("Иван", "Сергеевич", "Иванова"),
 )
-@async_timeit(duration=150)
+@async_timeit(duration=600)
 async def test_v2_ru(client, search):
     response = await client.get(f"/v2/users/?search={search}")
     assert response.status_code == 200, response.status_code

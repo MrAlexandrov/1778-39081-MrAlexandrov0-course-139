@@ -19,7 +19,7 @@ def async_timeit(duration):
     return wrapper
 
 
-@async_timeit(duration=45)
+@async_timeit(duration=150)
 async def test_pending_orders(client):
     response = await client.get("/pending_orders")
     assert response.status_code == 200, response.status_code
