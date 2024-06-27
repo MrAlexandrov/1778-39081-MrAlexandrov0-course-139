@@ -78,5 +78,6 @@ def send_report(request):
         path = os.path.normpath(f'{os.path.dirname(os.path.abspath(__file__))}/../../')
         with open(f"{path}/result.json", "w") as f:
             json.dump({"tests_ok": len(successful_tests), "tests_count": tests_count, "failed": failed_tests}, f)
+        print(f"!!! file: {path}/result.json")
 
     request.addfinalizer(_send_report)
