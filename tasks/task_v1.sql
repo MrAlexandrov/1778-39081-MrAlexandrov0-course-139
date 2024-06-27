@@ -41,3 +41,18 @@
 -- **Дополнительные материалы:**
 
 -- - Документация PostgreSQL по индексам: https://www.postgresql.org/docs/current/indexes.html
+
+CREATE INDEX IF NOT EXISTS users_user_id ON users_user (UPPER(id::text));
+CREATE INDEX IF NOT EXISTS users_user_names ON users_user (UPPER(first_name::text) varchar_pattern_ops, UPPER(last_name::text) varchar_pattern_ops);
+CREATE INDEX IF NOT EXISTS users_user_firstname ON users_user (UPPER(first_name::text) varchar_pattern_ops);
+CREATE INDEX IF NOT EXISTS users_user_lastname ON users_user (UPPER(last_name::text) varchar_pattern_ops);
+
+CREATE INDEX IF NOT EXISTS users_user_id_btree_idx ON users_user USING btree (id);
+CREATE INDEX IF NOT EXISTS users_user_firstname_gin_idx ON users_user USING gin (UPPER(first_name) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS users_user_lastname_gin_idx ON users_user USING gin (UPPER(last_name) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS users_user_phone_gin_idx ON users_user USING gin (UPPER(phone_number) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS users_user_email_gin_idx ON users_user USING gin (UPPER(email) gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS orders_status_pending_order_date_idx
+ON orders (status, order_date)
+WHERE status = 'Pending';
