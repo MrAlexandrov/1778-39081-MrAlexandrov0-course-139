@@ -18,6 +18,8 @@ DATABASE_PORT = os.getenv("DATABASE_PORT", "5432")
 DATABASE_URL = f"postgres://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 successful_tests = []
+failed_tests = []
+tests_count = 0
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -39,10 +41,11 @@ def client():
 @pytest.fixture(scope="session", autouse=True)
 def read_indexes(initialize_db):
     async def run_scripts():
+        path = os.path.normpath(f'{os.path.dirname(os.path.abspath(__file__))}/../../tasks')
         solutions = (
-            "/tasks/task_v1.sql",
-            "/tasks/task_v2.sql",
-            "/tasks/task_v3_orders.sql",
+            f"{path}/task_v1.sql",
+            f"{path}/task_v2.sql",
+            f"{path}/task_v3_orders.sql",
         )
         conn = Tortoise.get_connection("default")
         
@@ -60,14 +63,20 @@ def read_indexes(initialize_db):
     
 
 def pytest_runtest_logreport(report):
-    if report.when == "call" and report.passed:
-        successful_tests.append(report.nodeid)
+    if report.when == "call":
+        global tests_count
+        tests_count += 1
+        if report.passed:
+            successful_tests.append(report.nodeid)
+        else:
+            failed_tests.append(report.nodeid)
 
 
 @pytest.fixture(scope="session", autouse=True)
 def send_report(request):
     def _send_report():
-        with open("score.json", "w") as f:
-            json.dump({"score": len(successful_tests)}, f)
+        path = os.path.normpath(f'{os.path.dirname(os.path.abspath(__file__))}/../../..')
+        with open(f"{path}/result.json", "w") as f:
+            json.dump({"tests_ok": len(successful_tests), "tests_count": tests_count, "failed": failed_tests}, f)
 
     request.addfinalizer(_send_report)
