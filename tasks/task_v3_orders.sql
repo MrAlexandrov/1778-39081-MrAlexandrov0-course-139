@@ -25,7 +25,3 @@
 
 -- #### Дополнительные материалы:
 -- - Документация PostgreSQL по индексам: https://www.postgresql.org/docs/current/indexes.html
-
-CREATE INDEX IF NOT EXISTS orders_status_pending_order_date_idx
-ON orders (status, order_date)
-WHERE status = 'Pending';

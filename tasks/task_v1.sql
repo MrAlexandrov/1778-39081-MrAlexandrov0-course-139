@@ -41,8 +41,3 @@
 -- **Дополнительные материалы:**
 
 -- - Документация PostgreSQL по индексам: https://www.postgresql.org/docs/current/indexes.html
-
-CREATE INDEX IF NOT EXISTS users_user_id ON users_user (UPPER(id::text));
-CREATE INDEX IF NOT EXISTS users_user_names ON users_user (UPPER(first_name::text) varchar_pattern_ops, UPPER(last_name::text) varchar_pattern_ops);
-CREATE INDEX IF NOT EXISTS users_user_firstname ON users_user (UPPER(first_name::text) varchar_pattern_ops);
-CREATE INDEX IF NOT EXISTS users_user_lastname ON users_user (UPPER(last_name::text) varchar_pattern_ops);

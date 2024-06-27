@@ -34,9 +34,3 @@
 -- **Дополнительные материалы:**
 
 -- - Документация PostgreSQL по индексам: https://www.postgresql.org/docs/current/indexes.html
-
-CREATE INDEX IF NOT EXISTS users_user_id_btree_idx ON users_user USING btree (id);
-CREATE INDEX IF NOT EXISTS users_user_firstname_gin_idx ON users_user USING gin (UPPER(first_name) gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS users_user_lastname_gin_idx ON users_user USING gin (UPPER(last_name) gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS users_user_phone_gin_idx ON users_user USING gin (UPPER(phone_number) gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS users_user_email_gin_idx ON users_user USING gin (UPPER(email) gin_trgm_ops);
