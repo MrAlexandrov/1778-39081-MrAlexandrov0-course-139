@@ -1,6 +1,12 @@
 -- #### Задание-3: Оптимизация индексов в SQL
 
 -- ```sql
+
+DROP INDEX IF EXISTS idx_orders_status_order_date;
+
+CREATE INDEX idx_orders_status_order_date ON orders (status, order_date ASC);
+
+-- EXPLAIN ANALYZE
 -- SELECT
 --     order_id,
 --     customer_id,
@@ -15,6 +21,7 @@
 --     status = 'Pending'
 -- ORDER BY
 --     order_date;
+
 -- ```
 
 -- #### Подсказки:

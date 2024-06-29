@@ -1,6 +1,14 @@
 -- ### Задание-1: Ускорение поиска
 
 -- ```sql
+
+DROP INDEX IF EXISTS idx_users_user_upper_first_name_like_text;
+DROP INDEX IF EXISTS idx_users_user_upper_last_name_like_text;
+
+CREATE INDEX idx_users_user_upper_first_name_like_text ON public.users_user (UPPER(first_name) text_pattern_ops);
+CREATE INDEX idx_users_user_upper_last_name_like_text ON public.users_user (UPPER(last_name) text_pattern_ops);
+
+-- EXPLAIN ANALYZE
 -- SELECT 
 --     "users_user"."id", 
 --     "users_user"."first_name", 
@@ -14,9 +22,11 @@
 -- FROM 
 --     "users_user" 
 -- WHERE 
---     (UPPER("users_user"."id"::text) = UPPER('John') 
---     OR UPPER("users_user"."first_name"::text) LIKE UPPER('John%') 
---     OR UPPER("users_user"."last_name"::text) LIKE UPPER('John%'));
+--     (
+--         UPPER("users_user"."first_name") LIKE UPPER('John%') 
+--         OR UPPER("users_user"."last_name") LIKE UPPER('John%')
+--     );
+
 -- ```
 
 -- #### Задача:

@@ -1,6 +1,18 @@
 -- ### Задание-2: Ускорение поиска
 
 -- ```sql
+
+DROP INDEX IF EXISTS idx_users_user_upper_first_name_like_varchar;
+DROP INDEX IF EXISTS idx_users_user_upper_last_name_like_varchar;
+DROP INDEX IF EXISTS idx_users_user_upper_email_like_varchar;
+
+
+CREATE INDEX idx_users_user_upper_first_name_like_varchar ON public.users_user (UPPER(first_name) varchar_pattern_ops);
+CREATE INDEX idx_users_user_upper_last_name_like_varchar ON public.users_user (UPPER(last_name) varchar_pattern_ops ASC);
+CREATE INDEX idx_users_user_upper_email_like_varchar ON public.users_user (UPPER(email) varchar_pattern_ops);
+
+
+-- EXPLAIN ANALYZE
 -- SELECT 
 --     "users_user"."id", 
 --     "users_user"."first_name", 
@@ -15,14 +27,13 @@
 --     "users_user" 
 -- WHERE 
 --     (
---         UPPER("users_user"."id"::text) = UPPER('John') 
---         OR UPPER("users_user"."first_name"::text) LIKE UPPER('%John%') 
---         OR UPPER("users_user"."last_name"::text) LIKE UPPER('%John%') 
---         OR UPPER("users_user"."phone_number"::text) LIKE UPPER('John%') 
---         OR UPPER("users_user"."email"::text) LIKE UPPER('%John%')
+--         UPPER("users_user"."first_name") LIKE UPPER('%John%') 
+--         OR UPPER("users_user"."last_name") LIKE UPPER('%John%') 
+--         OR UPPER("users_user"."email") LIKE UPPER('%John%')
 --     ) 
 -- ORDER BY 
 --     "users_user"."last_name" ASC;
+
 -- ```
 
 -- **Подсказки:**
