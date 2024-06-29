@@ -2,9 +2,15 @@
 
 -- ```sql
 
-DROP INDEX IF EXISTS idx_orders_status_order_date;
+DROP INDEX IF EXISTS idx_orders_status;
+-- DROP INDEX IF EXISTS idx_orders_order_date_asc;
 
-CREATE INDEX idx_orders_status_order_date ON orders (status, order_date ASC);
+-- DROP INDEX IF EXISTS idx_orders_status_order_date;
+
+CREATE INDEX idx_orders_status ON public.orders (status);
+-- CREATE INDEX idx_orders_order_date_asc ON public.orders (order_date ASC);
+
+-- CREATE INDEX idx_orders_status_order_date ON public.orders (status, order_date ASC);
 
 -- EXPLAIN ANALYZE
 -- SELECT
